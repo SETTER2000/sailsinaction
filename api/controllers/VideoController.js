@@ -100,16 +100,16 @@ module.exports = {
 
   joinChat: function (req, res) {
 
-    // Nothing except socket requests should ever hit this endpoint.
+    // Ничто, кроме запросов сокетов, никогда не должно ударять по этой конечной точке.
     if (!req.isSocket) {
       return res.badRequest();
     }
-    // TODO: ^ pull this into a `isSocketRequest` policy
+    // TODO: ^ Потяните это в политику `isSocketRequest`
 
-    // Join the room for this video (as the requesting socket)
+    // Присоединитесь к комнате для этого видео (в качестве запрашивающего сокета)
     Video.subscribe(req, req.param('id') );
     
-    // Join the the video room for the typing animation
+    // Присоединитесь к комнате видео для анимации ввода
     sails.sockets.join(req, 'video'+req.param('id'));
     // Video.watch(req);
     return res.ok();
@@ -117,7 +117,7 @@ module.exports = {
 
   chat: function(req, res) {
 
-    // Nothing except socket requests should ever hit this endpoint.
+    // Ничто, кроме запросов сокетов, никогда не должно ударять по этой конечной точке.
     if (!req.isSocket) {
       return res.badRequest();
     }
@@ -136,16 +136,15 @@ module.exports = {
         if (err) return res.negotiate(err);
         if (!foundUser) return res.notFound();
 
-        // Broadcast WebSocket event to everyone else currently online so their user 
-        // agents can update the UI for them.
-        // sails.sockets.broadcast('video'+req.param('id'), 'chat', {
-        //   message: req.param('message'),
-        //   username: foundUser.username,
-        //   created: 'just now',
-        //   gravatarURL: foundUser.gravatarURL
-        // });
-
-        // Send a video event to the video record room 
+        // Трансляция события WebSocket всем остальным, находящимся в настоящее время в сети,
+        // поэтому их пользователь
+        // агенты могут обновлять интерфейс для них.
+        // sails.sockets.broadcast ('video' + req.param ('id'), 'chat', {
+        // сообщение: req.param ('сообщение'),
+        // имя пользователя: foundUser.username,
+        // Создано: «только сейчас»,
+        // gravatarURL: foundUser.gravatarURL
+        //});
         Video.publishUpdate(+req.param('id'), {
           message: req.param('message'),
           username: foundUser.username,
